@@ -110,7 +110,7 @@ class TrydanMQTTBridge:
             mqtt_config = self.config['mqtt']
             
             self.mqtt_client = mqtt.Client(
-                client_id=mqtt_config.get('client_id', 'trydan2mqtt')
+                client_id=mqtt_config.get('client_id', 'trydan')
             )
             
             # Set up authentication if provided
@@ -154,8 +154,8 @@ class TrydanMQTTBridge:
         if rc == 0:
             self.logger.info("MQTT connected successfully")
             
-            # Subscribe to command topics
-            command_topic = f"{self.config['mqtt']['topic_prefix']}/command/+"
+            # Subscribe to command topics using device_id from config
+            command_topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['trydan'].get('device_id', 'trydan_default')}/set"
             client.subscribe(command_topic)
             self.logger.info(f"Subscribed to command topic: {command_topic}")
         else:
@@ -170,8 +170,12 @@ class TrydanMQTTBridge:
         """Handle incoming MQTT messages"""
         try:
             topic_parts = msg.topic.split('/')
-            if len(topic_parts) >= 3 and topic_parts[-2] == 'command':
-                command = topic_parts[-1]
+            device_id = self.config['trydan']['device_id']
+            topic_prefix = self.config['mqtt']['topic_prefix']
+            
+            # Check if message is for this device: topic_prefix/device_id/command
+            if len(topic_parts) >= 3 and topic_parts[0] == topic_prefix and topic_parts[1] == device_id:
+                command = topic_parts[2]
                 payload = msg.payload.decode('utf-8')
                 
                 self.logger.info(f"Received command: {command} with payload: {payload}")
@@ -187,34 +191,34 @@ class TrydanMQTTBridge:
                 self.logger.error("Trydan device not connected")
                 return
             
-            if command == "set_charge_current":
-                current = int(float(payload))
-                await self.trydan.intensity(current)
-                self.logger.info(f"Set charge current to {current}A")
-                
-            elif command == "paused":
-                if payload.lower() in ['ON', 'pause', 'stop', 'true', '1']:
-                    await self.trydan.pause(True)
-                    self.logger.info("Paused charging")
-                elif payload.lower() in ['OFF', 'resume', 'start', 'false', '0']:
-                    await self.trydan.resume()
-                    self.logger.info("Resumed charging")
+            if command == "set":
+                payload_data = json.loads(payload)
+                if 'charge_current' in payload_data:
+                    current = int(float(payload_data['charge_current']))
+                    await self.trydan.intensity(current)
+                    self.logger.info(f"Set charge current to {current}A")
+                elif 'paused' in payload_data:
+                    if payload_data['paused'].lower() in ['ON', 'pause', 'stop', 'true', '1']:
+                        await self.trydan.pause(True)
+                        self.logger.info("Paused charging")
+                    elif payload_data['paused'].lower() in ['OFF', 'resume', 'start', 'false', '0']:
+                        await self.trydan.resume()
+                        self.logger.info("Resumed charging")
+                    else:
+                        self.logger.warning(f"Invalid paused command payload: {payload_data['paused']}. Use 'true'/'false' or 'pause'/'resume'")
+                elif 'locked' in payload_data:
+                    if payload_data['locked'].lower() in ['ON', 'lock', 'true', '1']:
+                        await self.trydan.lock()
+                        self.logger.info("Locked charger")
+                    elif payload_data['locked'].lower() in ['OFF', 'unlock', 'false', '0']:
+                        await self.trydan.unlock()
+                        self.logger.info("Unlocked charger")
+                    else:
+                        self.logger.warning(f"Invalid locked command payload: {payload_data['locked']}. Use 'true'/'false' or 'lock'/'unlock'")
                 else:
-                    self.logger.warning(f"Invalid paused command payload: {payload}. Use 'true'/'false' or 'pause'/'resume'")
-                
-            elif command == "locked":
-                if payload.lower() in ['ON', 'lock', 'true', '1']:
-                    await self.trydan.lock()
-                    self.logger.info("Locked charger")
-                elif payload.lower() in ['OFF', 'unlock', 'false', '0']:
-                    await self.trydan.unlock()
-                    self.logger.info("Unlocked charger")
-                else:
-                    self.logger.warning(f"Invalid locked command payload: {payload}. Use 'true'/'false' or 'lock'/'unlock'")
-                
+                    self.logger.warning(f"Unknown set command payload: {payload}")
             else:
                 self.logger.warning(f"Unknown command: {command}")
-                
         except Exception as e:
             self.logger.error(f"Error handling command {command}: {e}")
     
@@ -265,15 +269,16 @@ class TrydanMQTTBridge:
                 return
             
             topic_prefix = self.config['mqtt']['topic_prefix']
+            device_id = self.config['trydan']['device_id']
             
             # Publish individual data points
             for key, value in data.items():
                 if key != 'timestamp':
-                    topic = f"{topic_prefix}/sensor/{key}"
+                    topic = f"{topic_prefix}/{device_id}/sensor/{key}"
                     self.mqtt_client.publish(topic, str(value), retain=True)
             
             # Publish complete data as JSON
-            json_topic = f"{topic_prefix}/data"
+            json_topic = f"{topic_prefix}/{device_id}/data"
             self.mqtt_client.publish(json_topic, json.dumps(data), retain=True)
             
             self.logger.debug("Published data to MQTT")
@@ -287,7 +292,7 @@ class TrydanMQTTBridge:
             if not self.mqtt_client:
                 return
             
-            topic = f"{self.config['mqtt']['topic_prefix']}/availability"
+            topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['mqtt']['device_id']}/availability"
             status = "online" if available else "offline"
             self.mqtt_client.publish(topic, status, retain=True)
             

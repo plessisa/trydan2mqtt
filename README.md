@@ -111,20 +111,21 @@ Edit the configuration file at `/etc/trydan2mqtt/config.yaml`:
 ```yaml
 # Trydan EV Charger Configuration
 trydan:
-  host: "192.168.1.100"  # Your Trydan IP address
+  host: "192.168.1.100"    # Your Trydan IP address
+  device_id: "74D9TI"      # Unique device identifier for MQTT topics
 
 # MQTT Broker Configuration
 mqtt:
-  host: "192.168.1.50"   # Your MQTT broker IP
-  port: 1883             # MQTT port (1883 standard, 8883 SSL)
-  client_id: "trydan2mqtt"
-  topic_prefix: "trydan"
-  username: "mqtt_user"   # Optional
-  password: "mqtt_pass"   # Optional
+  host: "192.168.1.50"     # Your MQTT broker IP
+  port: 1883               # MQTT port (1883 standard, 8883 SSL)
+  client_id: "trydan"
+  topic_prefix: "trydan2mqtt"
+  username: "mqtt_user"    # Optional
+  password: "mqtt_pass"    # Optional
 
 # Bridge Configuration
 bridge:
-  poll_interval: 30      # Data collection interval in seconds
+  poll_interval: 30        # Data collection interval in seconds
 ```
 
 ## Usage
@@ -162,55 +163,63 @@ python3 /opt/trydan2mqtt/src/trydan2mqtt.py /path/to/custom/config.yaml
 The application publishes data to the following MQTT topics:
 
 #### Status Topics
-- `trydan/sensor/status` - Charging status (charge_state)
-- `trydan/sensor/charging_current` - Current charging current in Amperes (intensity)
-- `trydan/sensor/charging_power` - Current charging power in Watts (charge_power)
-- `trydan/sensor/energy_delivered` - Total energy delivered in kWh (charge_energy)
-- `trydan/sensor/charge_time` - Current charging session time
-- `trydan/sensor/voltage` - Installation voltage (voltage_installation)
-- `trydan/sensor/house_power` - House power consumption
-- `trydan/sensor/battery_power` - Battery power (if applicable)
-- `trydan/sensor/fv_power` - PV/Solar power generation
-- `trydan/sensor/max_intensity` - Maximum allowed charging current
-- `trydan/sensor/min_intensity` - Minimum allowed charging current
-- `trydan/sensor/ready_state` - Device ready state
-- `trydan/sensor/locked` - Charger lock status (true/false)
-- `trydan/sensor/paused` - Charging pause status (true/false)
-- `trydan/sensor/dynamic` - Dynamic charging mode status
-- `trydan/sensor/contracted_power` - Contracted power limit
-- `trydan/sensor/firmware_version` - Device firmware version
-- `trydan/sensor/device_id` - Unique device identifier
-- `trydan/sensor/ip_address` - Device IP address
-- `trydan/sensor/signal_status` - Communication signal status
-- `trydan/data` - Complete data as JSON with timestamp
-- `trydan/availability` - Device availability (online/offline)
+- `trydan2mqtt/{device_id}/sensor/status` - Charging status (charge_state)
+- `trydan2mqtt/{device_id}/sensor/charging_current` - Current charging current in Amperes (intensity)
+- `trydan2mqtt/{device_id}/sensor/charging_power` - Current charging power in Watts (charge_power)
+- `trydan2mqtt/{device_id}/sensor/energy_delivered` - Total energy delivered in kWh (charge_energy)
+- `trydan2mqtt/{device_id}/sensor/charge_time` - Current charging session time
+- `trydan2mqtt/{device_id}/sensor/voltage` - Installation voltage (voltage_installation)
+- `trydan2mqtt/{device_id}/sensor/house_power` - House power consumption
+- `trydan2mqtt/{device_id}/sensor/battery_power` - Battery power (if applicable)
+- `trydan2mqtt/{device_id}/sensor/fv_power` - PV/Solar power generation
+- `trydan2mqtt/{device_id}/sensor/max_intensity` - Maximum allowed charging current
+- `trydan2mqtt/{device_id}/sensor/min_intensity` - Minimum allowed charging current
+- `trydan2mqtt/{device_id}/sensor/ready_state` - Device ready state
+- `trydan2mqtt/{device_id}/sensor/locked` - Charger lock status (true/false)
+- `trydan2mqtt/{device_id}/sensor/paused` - Charging pause status (true/false)
+- `trydan2mqtt/{device_id}/sensor/dynamic` - Dynamic charging mode status
+- `trydan2mqtt/{device_id}/sensor/contracted_power` - Contracted power limit
+- `trydan2mqtt/{device_id}/sensor/firmware_version` - Device firmware version
+- `trydan2mqtt/{device_id}/sensor/device_id` - Unique device identifier
+- `trydan2mqtt/{device_id}/sensor/ip_address` - Device IP address
+- `trydan2mqtt/{device_id}/sensor/signal_status` - Communication signal status
+- `trydan2mqtt/{device_id}/data` - Complete data as JSON with timestamp
+- `trydan2mqtt/{device_id}/availability` - Device availability (online/offline)
 
 #### Command Topics
-Send commands to control the charger:
-- `trydan/command/set_charge_current` - Set charging current (send amperage as payload)
-- `trydan/command/paused` - Control pause state (payload: "true"/"pause" to pause, "false"/"resume" to resume)
-- `trydan/command/locked` - Control lock state (payload: "true"/"lock" to lock, "false"/"unlock" to unlock)
+Send commands to control the charger using JSON payloads (replace `{device_id}` with your configured device ID):
+- `trydan2mqtt/{device_id}/set` - Send control commands with JSON payload
+
+**Available JSON commands:**
+- `{"charge_current": 16}` - Set charging current (amperage value)
+- `{"paused": "true"}` - Control pause state ("true"/"pause" to pause, "false"/"resume" to resume)
+- `{"locked": "true"}` - Control lock state ("true"/"lock" to lock, "false"/"unlock" to unlock)
 
 #### Example Commands
 
-Resume charging:
+Resume charging (replace `74D9TI` with your device ID):
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/paused" -m "false"
+mosquitto_pub -h localhost -t "trydan2mqtt/74D9TI/set" -m '{"paused": "false"}'
 ```
 
 Set charging current to 16A:
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/set_charge_current" -m "16"
+mosquitto_pub -h localhost -t "trydan2mqtt/74D9TI/set" -m '{"charge_current": 16}'
 ```
 
 Pause charging:
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/paused" -m "true"
+mosquitto_pub -h localhost -t "trydan2mqtt/74D9TI/set" -m '{"paused": "true"}'
 ```
 
 Lock charger:
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/locked" -m "true"
+mosquitto_pub -h localhost -t "trydan2mqtt/74D9TI/set" -m '{"locked": "true"}'
+```
+
+Unlock charger:
+```bash
+mosquitto_pub -h localhost -t "trydan2mqtt/74D9TI/set" -m '{"locked": "false"}'
 ```
 
 Lock charger:
@@ -241,7 +250,7 @@ mosquitto_pub -h localhost -t "trydan/command/lock" -m ""
 4. **No data being published**:
    - Check Trydan connection status in logs
    - Verify MQTT topic configuration
-   - Test with MQTT client: `mosquitto_sub -h <broker> -t "trydan/#"`
+   - Test with MQTT client: `mosquitto_sub -h <broker> -t "trydan2mqtt/#"`
 
 ### Logs
 
@@ -277,7 +286,7 @@ asyncio.run(test())
 Test MQTT connection:
 ```bash
 # Subscribe to all topics
-mosquitto_sub -h <mqtt_broker> -t "trydan/#"
+mosquitto_sub -h <mqtt_broker> -t "trydan2mqtt/#"
 
 # Publish test message
 mosquitto_pub -h <mqtt_broker> -t "test/topic" -m "Hello MQTT"
