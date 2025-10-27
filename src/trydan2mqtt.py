@@ -96,8 +96,8 @@ class TrydanMQTTBridge:
                 host=trydan_config['host']
             )
             
-            # Test connection
-            await self.trydan.connect()
+            # Test connection by getting data
+            await self.trydan.get_data()
             self.logger.info(f"Connected to Trydan device at {trydan_config['host']}")
             return True
             
@@ -190,22 +190,33 @@ class TrydanMQTTBridge:
                 return
             
             if command == "set_charge_current":
-                current = float(payload)
-                await self.trydan.set_charge_current(current)
+                current = int(float(payload))
+                await self.trydan.intensity(current)
                 self.logger.info(f"Set charge current to {current}A")
                 
             elif command == "start_charge":
-                await self.trydan.start_charge()
-                self.logger.info("Started charging")
+                await self.trydan.resume()
+                self.logger.info("Started/resumed charging")
                 
             elif command == "stop_charge":
-                await self.trydan.stop_charge()
-                self.logger.info("Stopped charging")
+                await self.trydan.pause()
+                self.logger.info("Stopped/paused charging")
                 
-            elif command == "set_charge_mode":
-                mode = payload.strip()
-                await self.trydan.set_charge_mode(mode)
-                self.logger.info(f"Set charge mode to {mode}")
+            elif command == "pause_charge":
+                await self.trydan.pause(True)
+                self.logger.info("Paused charging")
+                
+            elif command == "resume_charge":
+                await self.trydan.resume()
+                self.logger.info("Resumed charging")
+                
+            elif command == "lock":
+                await self.trydan.lock()
+                self.logger.info("Locked charger")
+                
+            elif command == "unlock":
+                await self.trydan.unlock()
+                self.logger.info("Unlocked charger")
                 
             else:
                 self.logger.warning(f"Unknown command: {command}")
@@ -219,16 +230,32 @@ class TrydanMQTTBridge:
             if not self.trydan:
                 return None
             
-            # Read various data points from the device
+            # Get data from the device
+            trydan_data = await self.trydan.get_data()
+            
+            # Convert to dictionary with meaningful names
             data = {
                 'timestamp': datetime.now().isoformat(),
-                'status': await self.trydan.get_status(),
-                'charging_current': await self.trydan.get_charging_current(),
-                'charging_power': await self.trydan.get_charging_power(),
-                'energy_delivered': await self.trydan.get_energy_delivered(),
-                'temperature': await self.trydan.get_temperature(),
-                'voltage': await self.trydan.get_voltage(),
-                'frequency': await self.trydan.get_frequency(),
+                'status': trydan_data.charge_state,
+                'charging_current': trydan_data.intensity,
+                'charging_power': trydan_data.charge_power,
+                'energy_delivered': trydan_data.charge_energy,
+                'charge_time': trydan_data.charge_time,
+                'voltage': trydan_data.voltage_installation,
+                'house_power': trydan_data.house_power,
+                'battery_power': trydan_data.battery_power,
+                'fv_power': trydan_data.fv_power,
+                'max_intensity': trydan_data.max_intensity,
+                'min_intensity': trydan_data.min_intensity,
+                'ready_state': trydan_data.ready_state,
+                'locked': trydan_data.locked,
+                'paused': trydan_data.paused,
+                'dynamic': trydan_data.dynamic,
+                'contracted_power': trydan_data.contracted_power,
+                'firmware_version': trydan_data.firmware_version,
+                'device_id': trydan_data.ID,
+                'ip_address': trydan_data.IP,
+                'signal_status': trydan_data.signal_status,
             }
             
             return data
@@ -321,12 +348,8 @@ class TrydanMQTTBridge:
         # Set availability to offline
         self._publish_availability(False)
         
-        # Disconnect from Trydan
-        if self.trydan:
-            try:
-                await self.trydan.disconnect()
-            except Exception as e:
-                self.logger.error(f"Error disconnecting from Trydan: {e}")
+        # Note: Trydan client doesn't require explicit disconnection
+        # The HTTP client will be automatically closed when the object is destroyed
         
         # Disconnect from MQTT
         if self.mqtt_client:
@@ -341,14 +364,23 @@ class TrydanMQTTBridge:
 
 async def main():
     """Main entry point"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Trydan to MQTT Bridge")
+    parser.add_argument('config', nargs='?', default=None, help='Configuration file path')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.1.0')
+    args = parser.parse_args()
+    
     # Support environment variable for config path (Docker-friendly)
-    config_path = os.getenv('CONFIG_PATH', sys.argv[1] if len(sys.argv) > 1 else "/etc/trydan2mqtt/config.yaml")
+    config_path = os.getenv('CONFIG_PATH', args.config if args.config else "/etc/trydan2mqtt/config.yaml")
     
     # For Docker deployment, try container-specific paths
     if not Path(config_path).exists():
         container_config = "/app/config/config.yaml"
         if Path(container_config).exists():
             config_path = container_config
+        elif Path("config/config.yaml").exists():
+            config_path = "config/config.yaml"
     
     try:
         bridge = TrydanMQTTBridge(config_path)
@@ -356,6 +388,11 @@ async def main():
     except Exception as e:
         logging.error(f"Fatal error: {e}")
         sys.exit(1)
+
+
+def cli_main():
+    """CLI entry point wrapper for async main"""
+    asyncio.run(main())
 
 
 if __name__ == "__main__":

@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: trydan2mqtt
+Version: 1.1.0
+Summary: Trydan to MQTT Bridge - Connect Trydan EV chargers to MQTT brokers
+Author: Your Name
+Author-email: your.email@example.com
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.7
+License-File: LICENSE
+Requires-Dist: paho-mqtt>=1.6.0
+Requires-Dist: PyYAML>=6.0
+Requires-Dist: pytrydan>=0.8.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

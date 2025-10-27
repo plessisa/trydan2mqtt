@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+src/trydan2mqtt.py
+src/trydan2mqtt.egg-info/PKG-INFO
+src/trydan2mqtt.egg-info/SOURCES.txt
+src/trydan2mqtt.egg-info/dependency_links.txt
+src/trydan2mqtt.egg-info/entry_points.txt
+src/trydan2mqtt.egg-info/requires.txt
+src/trydan2mqtt.egg-info/top_level.txt

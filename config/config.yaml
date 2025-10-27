@@ -5,12 +5,12 @@
 trydan:
   # IP address or hostname of the Trydan device
   # Use the actual IP address of your Trydan device on your network
-  host: "192.168.1.100"
+  host: "192.168.100.30"
 
 # MQTT Broker Configuration - External Broker
 mqtt:
   # Use your existing MQTT broker IP address or hostname
-  host: "192.168.1.50"  # CHANGE THIS to your MQTT broker IP
+  host: "127.0.0.1"  # CHANGE THIS to your MQTT broker IP
   # MQTT broker port (default: 1883, SSL: 8883)
   port: 1883
   # MQTT client ID (must be unique)
