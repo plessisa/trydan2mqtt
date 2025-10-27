@@ -162,14 +162,27 @@ python3 /opt/trydan2mqtt/src/trydan2mqtt.py /path/to/custom/config.yaml
 The application publishes data to the following MQTT topics:
 
 #### Status Topics
-- `trydan/sensor/status` - Charging status
-- `trydan/sensor/charging_current` - Current charging current (A)
-- `trydan/sensor/charging_power` - Current charging power (W)
-- `trydan/sensor/energy_delivered` - Total energy delivered (kWh)
-- `trydan/sensor/temperature` - Device temperature (°C)
-- `trydan/sensor/voltage` - Line voltage (V)
-- `trydan/sensor/frequency` - Line frequency (Hz)
-- `trydan/data` - Complete data as JSON
+- `trydan/sensor/status` - Charging status (charge_state)
+- `trydan/sensor/charging_current` - Current charging current in Amperes (intensity)
+- `trydan/sensor/charging_power` - Current charging power in Watts (charge_power)
+- `trydan/sensor/energy_delivered` - Total energy delivered in kWh (charge_energy)
+- `trydan/sensor/charge_time` - Current charging session time
+- `trydan/sensor/voltage` - Installation voltage (voltage_installation)
+- `trydan/sensor/house_power` - House power consumption
+- `trydan/sensor/battery_power` - Battery power (if applicable)
+- `trydan/sensor/fv_power` - PV/Solar power generation
+- `trydan/sensor/max_intensity` - Maximum allowed charging current
+- `trydan/sensor/min_intensity` - Minimum allowed charging current
+- `trydan/sensor/ready_state` - Device ready state
+- `trydan/sensor/locked` - Charger lock status (true/false)
+- `trydan/sensor/paused` - Charging pause status (true/false)
+- `trydan/sensor/dynamic` - Dynamic charging mode status
+- `trydan/sensor/contracted_power` - Contracted power limit
+- `trydan/sensor/firmware_version` - Device firmware version
+- `trydan/sensor/device_id` - Unique device identifier
+- `trydan/sensor/ip_address` - Device IP address
+- `trydan/sensor/signal_status` - Communication signal status
+- `trydan/data` - Complete data as JSON with timestamp
 - `trydan/availability` - Device availability (online/offline)
 
 #### Command Topics

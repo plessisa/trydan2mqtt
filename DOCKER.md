@@ -156,21 +156,37 @@ docker logs trydan-bridge -f
 The application publishes to these topics on your existing MQTT broker:
 
 ### Status Topics
-- `trydan/sensor/status`
-- `trydan/sensor/charging_current`
-- `trydan/sensor/charging_power`
-- `trydan/sensor/energy_delivered`
-- `trydan/sensor/temperature`
-- `trydan/sensor/voltage`
-- `trydan/sensor/frequency`
-- `trydan/data` (JSON)
-- `trydan/availability`
+- `trydan/sensor/status` - Charging status (charge_state)
+- `trydan/sensor/charging_current` - Current charging current in Amperes (intensity)
+- `trydan/sensor/charging_power` - Current charging power in Watts (charge_power)
+- `trydan/sensor/energy_delivered` - Total energy delivered in kWh (charge_energy)
+- `trydan/sensor/charge_time` - Current charging session time
+- `trydan/sensor/voltage` - Installation voltage (voltage_installation)
+- `trydan/sensor/house_power` - House power consumption
+- `trydan/sensor/battery_power` - Battery power (if applicable)
+- `trydan/sensor/fv_power` - PV/Solar power generation
+- `trydan/sensor/max_intensity` - Maximum allowed charging current
+- `trydan/sensor/min_intensity` - Minimum allowed charging current
+- `trydan/sensor/ready_state` - Device ready state
+- `trydan/sensor/locked` - Charger lock status (true/false)
+- `trydan/sensor/paused` - Charging pause status (true/false)
+- `trydan/sensor/dynamic` - Dynamic charging mode status
+- `trydan/sensor/contracted_power` - Contracted power limit
+- `trydan/sensor/firmware_version` - Device firmware version
+- `trydan/sensor/device_id` - Unique device identifier
+- `trydan/sensor/ip_address` - Device IP address
+- `trydan/sensor/signal_status` - Communication signal status
+- `trydan/data` - Complete data as JSON with timestamp
+- `trydan/availability` - Device availability (online/offline)
 
 ### Command Topics
-- `trydan/command/start_charge`
-- `trydan/command/stop_charge`
-- `trydan/command/set_charge_current`
-- `trydan/command/set_charge_mode`
+- `trydan/command/start_charge` - Start/resume charging
+- `trydan/command/stop_charge` - Stop/pause charging
+- `trydan/command/pause_charge` - Pause charging
+- `trydan/command/resume_charge` - Resume charging
+- `trydan/command/set_charge_current` - Set charging current (send amperage as payload)
+- `trydan/command/lock` - Lock the charger
+- `trydan/command/unlock` - Unlock the charger
 
 ## Troubleshooting
 
