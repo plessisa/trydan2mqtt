@@ -93,9 +93,7 @@ class TrydanMQTTBridge:
             trydan_config = self.config['trydan']
             
             self.trydan = Trydan(
-                host=trydan_config['host'],
-                port=trydan_config.get('port', 502),
-                slave_id=trydan_config.get('slave_id', 1)
+                host=trydan_config['host']
             )
             
             # Test connection

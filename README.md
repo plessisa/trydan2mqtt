@@ -112,8 +112,6 @@ Edit the configuration file at `/etc/trydan2mqtt/config.yaml`:
 # Trydan EV Charger Configuration
 trydan:
   host: "192.168.1.100"  # Your Trydan IP address
-  port: 502              # Modbus TCP port
-  slave_id: 1            # Modbus slave ID
 
 # MQTT Broker Configuration
 mqtt:

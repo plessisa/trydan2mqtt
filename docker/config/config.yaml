@@ -6,10 +6,6 @@ trydan:
   # IP address or hostname of the Trydan device
   # Use the actual IP address of your Trydan device on your network
   host: "192.168.1.100"
-  # Modbus TCP port (default: 502)
-  port: 502
-  # Modbus slave ID (default: 1)
-  slave_id: 1
 
 # MQTT Broker Configuration - External Broker
 mqtt:

@@ -51,8 +51,6 @@ Edit `docker/config/config.yaml`:
 # Trydan EV Charger Configuration
 trydan:
   host: "192.168.1.100"    # Your Trydan device IP
-  port: 502                # Modbus port
-  slave_id: 1              # Modbus slave ID
 
 # External MQTT Broker Configuration
 mqtt:
@@ -197,7 +195,7 @@ The application publishes to these topics on your existing MQTT broker:
 3. **Check network connectivity**:
    ```bash
    # Test Trydan connectivity from container
-   docker run --rm --network trydan2mqtt_trydan-network python:3.11-slim \
+   docker run --rm --network host python:3.11-slim \
      python -c "import socket; socket.create_connection(('192.168.1.100', 502), timeout=5); print('Trydan reachable')"
    ```
 
