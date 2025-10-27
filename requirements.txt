@@ -2,7 +2,7 @@
 # Install these packages: pip install -r requirements.txt
 
 # Core dependencies
-pytrydan>=1.0.0
+pytrydan>=0.8.1
 paho-mqtt>=1.6.0
 PyYAML>=6.0
 asyncio-mqtt>=0.11.0
