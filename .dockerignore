@@ -1,0 +1,71 @@
+# Docker ignore file for Trydan to MQTT Bridge
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+CHANGELOG.md
+LICENSE
+
+# Development files
+.vscode/
+.idea/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Linux specific files (we're containerizing this)
+systemd/
+scripts/install.sh
+
+# Docker files (don't include in build context recursively)
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+Dockerfile*
+
+# Logs
+*.log
+logs/
+docker/logs/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Configuration files that might contain secrets
+.env
+.env.local
+.env.*.local
+docker/mosquitto/config/passwd
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

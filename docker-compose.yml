@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  # Trydan to MQTT Bridge Application
+  trydan2mqtt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trydan-bridge
+    restart: unless-stopped
+    volumes:
+      - ./docker/config:/app/config:ro
+      - ./docker/logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - CONFIG_PATH=/app/config/config.yaml
+    network_mode: "host"  # Use host network to access external MQTT broker
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'trydan2mqtt.py' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  trydan-logs:

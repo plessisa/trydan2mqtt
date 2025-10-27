@@ -1,0 +1,19 @@
+# Trydan to MQTT Bridge - Python Dependencies
+# Install these packages: pip install -r requirements.txt
+
+# Core dependencies
+pytrydan>=1.0.0
+paho-mqtt>=1.6.0
+PyYAML>=6.0
+asyncio-mqtt>=0.11.0
+
+# Optional dependencies for enhanced functionality
+aiofiles>=0.8.0
+python-dotenv>=0.19.0
+
+# Development dependencies (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.20.0
+black>=22.0.0
+flake8>=4.0.0
+mypy>=0.910
