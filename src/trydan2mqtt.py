@@ -193,20 +193,20 @@ class TrydanMQTTBridge:
                 self.logger.info(f"Set charge current to {current}A")
                 
             elif command == "paused":
-                if payload.lower() in ['pause', 'stop', 'true', '1']:
+                if payload.lower() in ['ON', 'pause', 'stop', 'true', '1']:
                     await self.trydan.pause(True)
                     self.logger.info("Paused charging")
-                elif payload.lower() in ['resume', 'start', 'false', '0']:
+                elif payload.lower() in ['OFF', 'resume', 'start', 'false', '0']:
                     await self.trydan.resume()
                     self.logger.info("Resumed charging")
                 else:
                     self.logger.warning(f"Invalid paused command payload: {payload}. Use 'true'/'false' or 'pause'/'resume'")
                 
             elif command == "locked":
-                if payload.lower() in ['lock', 'true', '1']:
+                if payload.lower() in ['ON', 'lock', 'true', '1']:
                     await self.trydan.lock()
                     self.logger.info("Locked charger")
-                elif payload.lower() in ['unlock', 'false', '0']:
+                elif payload.lower() in ['OFF', 'unlock', 'false', '0']:
                     await self.trydan.unlock()
                     self.logger.info("Unlocked charger")
                 else:
