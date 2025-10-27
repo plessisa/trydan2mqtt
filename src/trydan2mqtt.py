@@ -111,8 +111,7 @@ class TrydanMQTTBridge:
             mqtt_config = self.config['mqtt']
             
             self.mqtt_client = mqtt.Client(
-                client_id=mqtt_config.get('client_id', 'trydan2mqtt'),
-                protocol=mqtt.MQTTv311
+                client_id=mqtt_config.get('client_id', 'trydan2mqtt')
             )
             
             # Set up authentication if provided
