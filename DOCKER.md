@@ -122,7 +122,7 @@ docker compose ps
 mosquitto_sub -h YOUR_MQTT_BROKER_IP -u your_username -P your_password -t "trydan/#"
 
 # Publish a test command
-mosquitto_pub -h YOUR_MQTT_BROKER_IP -u your_username -P your_password -t "trydan/command/resume_charge" -m ""
+mosquitto_pub -h YOUR_MQTT_BROKER_IP -u your_username -P your_password -t "trydan/command/paused" -m "false"
 ```
 
 ### Using Docker Container for Testing
@@ -176,10 +176,8 @@ The application publishes to these topics on your existing MQTT broker:
 
 ### Command Topics
 - `trydan/command/set_charge_current` - Set charging current (send amperage as payload)
-- `trydan/command/pause_charge` - Pause charging
-- `trydan/command/resume_charge` - Resume charging
-- `trydan/command/lock` - Lock the charger
-- `trydan/command/unlock` - Unlock the charger
+- `trydan/command/paused` - Control pause state (payload: "true"/"pause" to pause, "false"/"resume" to resume)
+- `trydan/command/locked` - Control lock state (payload: "true"/"lock" to lock, "false"/"unlock" to unlock)
 
 ## Troubleshooting
 
