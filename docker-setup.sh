@@ -34,8 +34,8 @@ check_docker() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
-        log_error "Docker Compose is not installed. Please install Docker Compose first."
+    if ! docker compose version &> /dev/null; then
+        log_error "Docker Compose is not available. Please install Docker Compose plugin first."
         exit 1
     fi
     
@@ -85,14 +85,14 @@ start_services() {
     log_info "Building and starting services..."
     
     # Build the application
-    docker-compose build trydan2mqtt
+    docker compose build trydan2mqtt
     
     # Start all services
-    docker-compose up -d
+    docker compose up -d
     
     log_success "Services started"
-    log_info "You can check the status with: docker-compose ps"
-    log_info "View logs with: docker-compose logs -f"
+    log_info "You can check the status with: docker compose ps"
+    log_info "View logs with: docker compose logs -f"
 }
 
 # Test MQTT connectivity
@@ -144,11 +144,11 @@ show_info() {
     echo "MQTT Topic Prefix: $(grep "topic_prefix:" docker/config/config.yaml | sed 's/.*topic_prefix: "\(.*\)".*/\1/')"
     echo
     log_info "Common commands:"
-    echo "  - Check status: docker-compose ps"
-    echo "  - View logs: docker-compose logs -f"
-    echo "  - Stop services: docker-compose down"
-    echo "  - Restart: docker-compose restart"
-    echo "  - Update config and restart: docker-compose restart trydan2mqtt"
+    echo "  - Check status: docker compose ps"
+    echo "  - View logs: docker compose logs -f"
+    echo "  - Stop services: docker compose down"
+    echo "  - Restart: docker compose restart"
+    echo "  - Update config and restart: docker compose restart trydan2mqtt"
     echo
     log_warning "The application uses host networking to access your existing MQTT broker"
 }
@@ -176,16 +176,16 @@ case "${1:-setup}" in
         update_config
         ;;
     start)
-        docker-compose up -d
+        docker compose up -d
         ;;
     stop)
-        docker-compose down
+        docker compose down
         ;;
     logs)
-        docker-compose logs -f
+        docker compose logs -f
         ;;
     restart)
-        docker-compose restart
+        docker compose restart
         ;;
     test)
         test_mqtt_connection

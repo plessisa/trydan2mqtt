@@ -38,7 +38,7 @@ This document provides instructions for deploying the Trydan to MQTT Bridge usin
 
 4. **Start the application**:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 ## Configuration
@@ -100,26 +100,25 @@ The Docker Compose setup includes:
 
 ```bash
 # Start services
-docker-compose up -d
+docker compose up -d
 
 # Stop services
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # View specific service logs
-docker-compose logs -f trydan2mqtt
-docker-compose logs -f mosquitto
+docker compose logs -f trydan2mqtt
 
 # Restart a service
-docker-compose restart trydan2mqtt
+docker compose restart trydan2mqtt
 
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 
 # Check service status
-docker-compose ps
+docker compose ps
 ```
 
 ### Testing MQTT Connection
@@ -145,10 +144,10 @@ docker run --rm --network host eclipse-mosquitto:2.0 \
 
 ```bash
 # Application logs
-docker-compose logs -f trydan2mqtt
+docker compose logs -f trydan2mqtt
 
 # All logs
-docker-compose logs -f
+docker compose logs -f
 
 # Container logs (alternative)
 docker logs trydan-bridge -f
@@ -181,7 +180,7 @@ The application publishes to these topics on your existing MQTT broker:
 
 1. **Check logs**:
    ```bash
-   docker-compose logs trydan2mqtt
+   docker compose logs trydan2mqtt
    ```
 
 2. **Verify configuration**:
@@ -210,24 +209,20 @@ The application publishes to these topics on your existing MQTT broker:
    docker exec -it trydan-mosquitto mosquitto_sub -h localhost -u trydan2mqtt -P your_password -t "test"
    ```
 
-2. **Check Mosquitto logs**:
+2. **Test external MQTT broker connectivity**:
    ```bash
-   docker-compose logs mosquitto
-   ```
-
-3. **Reset MQTT passwords**:
-   ```bash
-   ./docker-setup.sh passwords
+   # Test MQTT connectivity
+   ./docker-setup.sh test
    ```
 
 ### No Data Published
 
 1. **Check Trydan connection** in application logs
 2. **Verify Trydan IP address** in configuration
-3. **Test MQTT publishing**:
+3. **Test external MQTT broker connectivity**:
    ```bash
-   # Manual test publish
-   docker exec -it trydan-mosquitto mosquitto_pub -h localhost -u trydan2mqtt -P your_password -t "test/topic" -m "test message"
+   # Test MQTT connectivity
+   ./docker-setup.sh test
    ```
 
 ### Performance Issues
@@ -276,11 +271,11 @@ cp -r docker/config/ backup/config-$(date +%Y%m%d)/
 git pull
 
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 
 # Or rebuild specific service
-docker-compose build trydan2mqtt
-docker-compose up -d trydan2mqtt
+docker compose build trydan2mqtt
+docker compose up -d trydan2mqtt
 ```
 
 ### Log Rotation
@@ -288,7 +283,7 @@ docker-compose up -d trydan2mqtt
 Consider setting up log rotation for Docker logs:
 
 ```bash
-# Add to docker-compose.yml for each service
+# Add to compose.yml for each service
 logging:
   driver: "json-file"
   options:
@@ -310,7 +305,7 @@ For production deployment, consider:
 
 ## Support
 
-- Check logs with `docker-compose logs -f`
+- Check logs with `docker compose logs -f`
 - Verify configuration files
 - Test network connectivity
 - Consult the main README.md for application-specific troubleshooting
