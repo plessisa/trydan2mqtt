@@ -192,14 +192,6 @@ class TrydanMQTTBridge:
                 await self.trydan.intensity(current)
                 self.logger.info(f"Set charge current to {current}A")
                 
-            elif command == "start_charge":
-                await self.trydan.resume()
-                self.logger.info("Started/resumed charging")
-                
-            elif command == "stop_charge":
-                await self.trydan.pause()
-                self.logger.info("Stopped/paused charging")
-                
             elif command == "pause_charge":
                 await self.trydan.pause(True)
                 self.logger.info("Paused charging")

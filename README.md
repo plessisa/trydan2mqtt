@@ -187,19 +187,17 @@ The application publishes data to the following MQTT topics:
 
 #### Command Topics
 Send commands to control the charger:
-- `trydan/command/start_charge` - Start/resume charging
-- `trydan/command/stop_charge` - Stop/pause charging
+- `trydan/command/set_charge_current` - Set charging current (send amperage as payload)
 - `trydan/command/pause_charge` - Pause charging
 - `trydan/command/resume_charge` - Resume charging
-- `trydan/command/set_charge_current` - Set charging current (send amperage as payload)
 - `trydan/command/lock` - Lock the charger
 - `trydan/command/unlock` - Unlock the charger
 
 #### Example Commands
 
-Start/resume charging:
+Resume charging:
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/start_charge" -m ""
+mosquitto_pub -h localhost -t "trydan/command/resume_charge" -m ""
 ```
 
 Set charging current to 16A:
@@ -207,9 +205,9 @@ Set charging current to 16A:
 mosquitto_pub -h localhost -t "trydan/command/set_charge_current" -m "16"
 ```
 
-Stop/pause charging:
+Pause charging:
 ```bash
-mosquitto_pub -h localhost -t "trydan/command/stop_charge" -m ""
+mosquitto_pub -h localhost -t "trydan/command/pause_charge" -m ""
 ```
 
 Lock charger:
