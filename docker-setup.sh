@@ -57,12 +57,12 @@ update_config() {
     
     read -p "Enter Trydan device IP address (e.g., 192.168.1.100): " trydan_host
     
-    # Update the Docker config
-    sed -i.bak "s/host: \"192.168.1.50\"/host: \"$mqtt_host\"/g" docker/config/config.yaml
-    sed -i "s/port: 1883/port: $mqtt_port/g" docker/config/config.yaml
-    sed -i "s/username: \"your_mqtt_username\"/username: \"$mqtt_username\"/g" docker/config/config.yaml
-    sed -i "s/password: \"your_mqtt_password\"/password: \"$mqtt_password\"/g" docker/config/config.yaml
-    sed -i "s/host: \"192.168.1.100\"/host: \"$trydan_host\"/g" docker/config/config.yaml
+    # Update the config
+    sed -i.bak "s/host: \"192.168.1.50\"/host: \"$mqtt_host\"/g" config/config.yaml
+    sed -i "s/port: 1883/port: $mqtt_port/g" config/config.yaml
+    sed -i "s/username: \"your_mqtt_username\"/username: \"$mqtt_username\"/g" config/config.yaml
+    sed -i "s/password: \"your_mqtt_password\"/password: \"$mqtt_password\"/g" config/config.yaml
+    sed -i "s/host: \"192.168.1.100\"/host: \"$trydan_host\"/g" config/config.yaml
     
     log_success "Configuration updated"
 }
@@ -72,10 +72,10 @@ set_permissions() {
     log_info "Setting proper permissions..."
     
     # Create directories if they don't exist
-    mkdir -p docker/logs
+    mkdir -p logs
     
     # Set permissions for log directories
-    chmod 755 docker/logs
+    chmod 755 logs
     
     log_success "Permissions set"
 }
@@ -100,8 +100,8 @@ test_mqtt_connection() {
     log_info "Testing MQTT connectivity..."
     
     # Extract MQTT settings from config
-    mqtt_host=$(grep "host:" docker/config/config.yaml | head -n2 | tail -n1 | sed 's/.*host: "\(.*\)".*/\1/')
-    mqtt_port=$(grep "port:" docker/config/config.yaml | head -n2 | tail -n1 | sed 's/.*port: \(.*\)/\1/')
+    mqtt_host=$(grep "host:" config/config.yaml | head -n2 | tail -n1 | sed 's/.*host: "\(.*\)".*/\1/')
+    mqtt_port=$(grep "port:" config/config.yaml | head -n2 | tail -n1 | sed 's/.*port: \(.*\)/\1/')
     
     # Test connection using a simple Python script in a container
     docker run --rm --network host python:3.11-slim sh -c "
@@ -139,9 +139,9 @@ show_info() {
     log_info "Service Information:"
     echo "===================="
     echo "Application: Trydan to MQTT Bridge"
-    echo "External MQTT Broker: $(grep "host:" docker/config/config.yaml | head -n2 | tail -n1 | sed 's/.*host: "\(.*\)".*/\1/')"
-    echo "Trydan Device: $(grep "host:" docker/config/config.yaml | head -n1 | sed 's/.*host: "\(.*\)".*/\1/')"
-    echo "MQTT Topic Prefix: $(grep "topic_prefix:" docker/config/config.yaml | sed 's/.*topic_prefix: "\(.*\)".*/\1/')"
+    echo "External MQTT Broker: $(grep "host:" config/config.yaml | head -n2 | tail -n1 | sed 's/.*host: "\(.*\)".*/\1/')"
+    echo "Trydan Device: $(grep "host:" config/config.yaml | head -n1 | sed 's/.*host: "\(.*\)".*/\1/')"
+    echo "MQTT Topic Prefix: $(grep "topic_prefix:" config/config.yaml | sed 's/.*topic_prefix: "\(.*\)".*/\1/')"
     echo
     log_info "Common commands:"
     echo "  - Check status: docker compose ps"

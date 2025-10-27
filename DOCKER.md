@@ -28,7 +28,7 @@ This document provides instructions for deploying the Trydan to MQTT Bridge usin
 3. **Manual configuration** (alternative to setup script):
    ```bash
    # Edit the configuration file
-   nano docker/config/config.yaml
+   nano config/config.yaml
    
    # Update these settings:
    # - Trydan host IP address
@@ -45,7 +45,7 @@ This document provides instructions for deploying the Trydan to MQTT Bridge usin
 
 ### Application Configuration
 
-Edit `docker/config/config.yaml`:
+Edit `config/config.yaml`:
 
 ```yaml
 # Trydan EV Charger Configuration
@@ -68,12 +68,7 @@ mqtt:
 
 ### Environment Variables
 
-You can also use environment variables by copying `.env.example` to `.env`:
-
-```bash
-cp .env.example .env
-nano .env
-```
+You can also override configuration values using environment variables directly in the docker-compose.yml file.
 
 ## Docker Configuration
 
