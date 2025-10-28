@@ -162,7 +162,7 @@ class TrydanMQTTBridge:
         else:
             self.logger.error(f"MQTT connection failed with code {reason_code}")
     
-    def _on_mqtt_disconnect(self, client, userdata, reason_code, properties):
+    def _on_mqtt_disconnect(self, client, userdata, flags, reason_code, properties):
         """MQTT disconnection callback"""
         if reason_code != 0:
             self.logger.warning("Unexpected MQTT disconnection")
