@@ -110,6 +110,7 @@ class TrydanMQTTBridge:
             mqtt_config = self.config['mqtt']
             
             self.mqtt_client = mqtt.Client(
+                mqtt.CallbackAPIVersion.VERSION1,
                 client_id=mqtt_config.get('client_id', 'trydan')
             )
             
