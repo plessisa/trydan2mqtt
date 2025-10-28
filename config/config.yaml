@@ -23,8 +23,8 @@ mqtt:
   keepalive: 60
   
   # Authentication (update with your MQTT broker credentials)
-  username: "your_mqtt_username"
-  password: "your_mqtt_password"
+  # username: "your_actual_mqtt_username"
+  # password: "your_actual_mqtt_password"
   
   # TLS/SSL Configuration (enable if your broker uses TLS)
   tls:
