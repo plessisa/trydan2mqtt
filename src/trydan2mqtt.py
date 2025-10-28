@@ -155,7 +155,7 @@ class TrydanMQTTBridge:
             self.logger.info("MQTT connected successfully")
             
             # Subscribe to command topics using device_id from config
-            command_topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['trydan'].get('device_id', 'trydan_default')}/set"
+            command_topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['trydan']['device_id']}/set"
             client.subscribe(command_topic)
             self.logger.info(f"Subscribed to command topic: {command_topic}")
         else:
