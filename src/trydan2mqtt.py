@@ -32,6 +32,7 @@ class TrydanMQTTBridge:
         self.trydan = None
         self.mqtt_client = None
         self.running = False
+        self.event_loop = None
         
         # Setup signal handlers for graceful shutdown
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -181,7 +182,15 @@ class TrydanMQTTBridge:
                 payload = msg.payload.decode('utf-8')
                 
                 self.logger.info(f"Received command: {command} with payload: {payload}")
-                asyncio.create_task(self._handle_command(command, payload))
+                
+                # Schedule the async command handling in the event loop
+                if self.event_loop and not self.event_loop.is_closed():
+                    asyncio.run_coroutine_threadsafe(
+                        self._handle_command(command, payload), 
+                        self.event_loop
+                    )
+                else:
+                    self.logger.error("Event loop not available for command handling")
                 
         except Exception as e:
             self.logger.error(f"Error processing MQTT message: {e}")
@@ -304,6 +313,9 @@ class TrydanMQTTBridge:
     async def run(self):
         """Main application loop"""
         self.logger.info("Starting Trydan to MQTT bridge")
+        
+        # Store the event loop reference for MQTT callbacks
+        self.event_loop = asyncio.get_running_loop()
         
         # Connect to devices
         if not await self._connect_trydan():
