@@ -170,6 +170,7 @@ class TrydanMQTTBridge:
     def _on_mqtt_message(self, client, userdata, msg):
         """Handle incoming MQTT messages"""
         try:
+            self.logger.info("MQTT message received")
             topic_parts = msg.topic.split('/')
             device_id = self.config['trydan']['device_id']
             topic_prefix = self.config['mqtt']['topic_prefix']
