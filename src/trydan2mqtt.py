@@ -150,9 +150,9 @@ class TrydanMQTTBridge:
             self.logger.error(f"Failed to connect to MQTT broker: {e}")
             return False
     
-    def _on_mqtt_connect(self, client, userdata, flags, rc):
+    def _on_mqtt_connect(self, client, userdata, flags, reason_code, properties):
         """MQTT connection callback"""
-        if rc == 0:
+        if reason_code == 0:
             self.logger.info("MQTT connected successfully")
             
             # Subscribe to command topics using device_id from config
@@ -160,11 +160,11 @@ class TrydanMQTTBridge:
             client.subscribe(command_topic)
             self.logger.info(f"Subscribed to command topic: {command_topic}")
         else:
-            self.logger.error(f"MQTT connection failed with code {rc}")
+            self.logger.error(f"MQTT connection failed with code {reason_code}")
     
-    def _on_mqtt_disconnect(self, client, userdata, rc):
+    def _on_mqtt_disconnect(self, client, userdata, reason_code, properties):
         """MQTT disconnection callback"""
-        if rc != 0:
+        if reason_code != 0:
             self.logger.warning("Unexpected MQTT disconnection")
     
     def _on_mqtt_message(self, client, userdata, msg):
