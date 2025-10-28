@@ -292,7 +292,7 @@ class TrydanMQTTBridge:
             if not self.mqtt_client:
                 return
             
-            topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['mqtt']['device_id']}/availability"
+            topic = f"{self.config['mqtt']['topic_prefix']}/{self.config['trydan']['device_id']}/availability"
             status = "online" if available else "offline"
             self.mqtt_client.publish(topic, status, retain=True)
             
