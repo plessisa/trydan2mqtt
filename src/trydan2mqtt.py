@@ -226,6 +226,16 @@ class TrydanMQTTBridge:
                         self.logger.info("Unlocked charger")
                     else:
                         self.logger.warning(f"Invalid locked command payload: {payload_data['locked']}. Use 'true'/'false' or 'lock'/'unlock'")
+                elif 'dynamic' in payload_data:
+                    if payload_data['dynamic'].lower() in ['ON', 'lock', 'true', '1']:
+                        await self.trydan.resume_dynamic()
+                        self.logger.info("Resumed dynamic charging")
+                    elif payload_data['dynamic'].lower() in ['OFF', 'unlock', 'false', '0']:
+                        await self.trydan.pause_dynamic()
+                        self.logger.info("Paused dynamic charging")
+                    else:
+                        self.logger.warning(f"Invalid dynamic command payload: {payload_data['dynamic']}. Use 'true'/'false' or 'lock'/'unlock'")
+
                 else:
                     self.logger.warning(f"Unknown set command payload: {payload}")
             else:
